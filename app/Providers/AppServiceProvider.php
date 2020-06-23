@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Channel;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,7 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        if (env('APP_ENV', 'local')) {
+            $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
+        }
     }
 
     /**
@@ -25,9 +28,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         \view()->composer('*', function ($view) {
-            $view->with('channels', \App\Channel::all());
-        });
+            $channels = Cache::rememberForever('channels', function () {
+                return Channel::all();
+            });
 
-        // OR \view()->share('channels', Channel::all()); but the table migrates before this makeing the first one better
+            $view->with('channels', $channels);
+        });
     }
 }
