@@ -61,7 +61,8 @@ class ThreadsController extends Controller
             'body' => request('body')
         ]);
 
-        return redirect($thread->path());
+        return redirect($thread->path())
+            ->with('flash', 'Your thread has been published!');
     }
 
     /**
@@ -72,11 +73,7 @@ class ThreadsController extends Controller
      */
     public function show($channel, Thread $thread)
     {
-        return view('threads.show', [
-            'thread' => $thread,
-            'replies' => $thread->replies()->paginate(20)
-
-        ]);
+        return view('threads.show', compact('thread'));
     }
 
     /**
@@ -121,9 +118,9 @@ class ThreadsController extends Controller
         return redirect('/threads');
     }
 
-    public function getThreads($channel, $filters)
+    public function getThreads(Channel $channel, ThreadFilters $filters)
     {
-        $threads = Thread::with('channel')->latest()->filter($filters);
+        $threads = Thread::latest()->filter($filters);
 
         if($channel->exists) {
             $threads->where('channel_id', $channel->id);

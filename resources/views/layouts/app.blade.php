@@ -21,7 +21,15 @@
     <style>
         .level { display: flex; align-items: center; }
         .flex { flex: 1; }
+        [v-cloak] {display: none;}
     </style>
+
+    <script>
+        window.App = {!! json_encode([
+            'signedIn' => Auth::check(),
+            'user' => Auth::user(),
+        ]) !!}
+    </script>
 </head>
 <body>
     <div id="app">
@@ -29,6 +37,8 @@
 
         <main class="py-5">
             @yield('content')
+
+            <flash message="{{ session('flash') }}"></flash>
         </main>
     </div>
 </body>
