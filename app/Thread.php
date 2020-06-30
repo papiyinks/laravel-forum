@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Notifications\ThreadWasUpdated;
+use App\Providers\ThreadReceivedNewReply;
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model
@@ -49,12 +50,7 @@ class Thread extends Model
     {
         $reply = $this->replies()->create($reply);
 
-        // prepare notifications
-        $this->subscriptions
-            ->filter(function ($sub) use ($reply) {
-                return $sub->user_id != $reply->user_id;
-        })
-        ->each->notify($reply);
+        event(new ThreadReceivedNewReply($reply));
 
         return $reply;
     }
@@ -90,5 +86,12 @@ class Thread extends Model
         return $this->subscriptions()
             ->where('user_id', auth()->id())
             ->exists();
+    }
+
+    public function hasUpdatesFor($user)
+    {
+        $key = $user->visitedThreadCacheKey($this);
+
+        return $this->updated_at > cache($key);
     }
 }
