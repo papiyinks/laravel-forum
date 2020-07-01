@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -65,6 +66,26 @@ class User extends Authenticatable
             Carbon::now()
         );
     }
+
+    public function getAvatarPathAttribute($avatar)
+    {
+        if (! $avatar) {
+            return '/images/avatars/default.png';
+        }
+
+        return asset("/storage/" . $avatar);
+    }
+
+    // public function avatar()
+    // {
+    //     // return asset("/storage/". $avatar ?: '/images/avatars/default.png');
+
+    //     if (! $this->avatar_path) {
+    //         return '/images/avatars/default.png';
+    //     }
+
+    //     return "/storage/" . $this->avatar_path;
+    // }
 
     public function visitedThreadCacheKey($thread)
     {
