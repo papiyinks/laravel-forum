@@ -37,6 +37,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'confirmed' => 'boolean'
     ];
 
     public function getRouteKeyName()
@@ -59,6 +60,14 @@ class User extends Authenticatable
         return $this->hasMany(Activity::class);
     }
 
+    public function confirm()
+    {
+        $this->confirmed = true;
+        $this->confirmation_token = null;
+
+        $this->save();
+    }
+
     public function read($thread)
     {
         cache()->forever(
@@ -75,17 +84,6 @@ class User extends Authenticatable
 
         return asset("/storage/" . $avatar);
     }
-
-    // public function avatar()
-    // {
-    //     // return asset("/storage/". $avatar ?: '/images/avatars/default.png');
-
-    //     if (! $this->avatar_path) {
-    //         return '/images/avatars/default.png';
-    //     }
-
-    //     return "/storage/" . $this->avatar_path;
-    // }
 
     public function visitedThreadCacheKey($thread)
     {
