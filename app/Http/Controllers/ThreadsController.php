@@ -66,6 +66,10 @@ class ThreadsController extends Controller
             'body' => request('body')
         ]);
 
+        if (request()->wantsJson()) {
+            return response($thread, 201);
+        }
+
         return redirect($thread->path())
             ->with('flash', 'Your thread has been published!');
     }
@@ -107,7 +111,7 @@ class ThreadsController extends Controller
      * @param  \App\Thread  $thread
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Thread $thread)
+    public function update($channel, Thread $thread)
     {
         //
     }

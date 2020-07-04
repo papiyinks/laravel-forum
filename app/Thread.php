@@ -4,6 +4,7 @@ namespace App;
 
 use App\Providers\ThreadReceivedNewReply;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Thread extends Model
 {
@@ -15,6 +16,10 @@ class Thread extends Model
 
     protected $appends = ['isSubscribedTo'];
 
+    protected $casts = [
+        'locked' => 'boolean'
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -22,11 +27,15 @@ class Thread extends Model
         static::deleting(function ($thread) {
             $thread->replies->each->delete();
         });
+
+        static::created(function ($thread) {
+            $thread->update(['slug' => $thread->title]);
+        });
     }
 
     public function path()
     {
-        return "/threads/{$this->channel->slug}/{$this->id}";
+        return "/threads/{$this->channel->slug}/{$this->slug}";
         // or return '/threads/' . $this->channel->slug . '/' . $this->id;
     }
 
@@ -92,5 +101,26 @@ class Thread extends Model
         $key = $user->visitedThreadCacheKey($this);
 
         return $this->updated_at > cache($key);
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    public function setSlugAttribute($value)
+    {
+        $slug = Str::slug($value);
+
+        if (static::whereSlug($slug)->exists()) {
+            $slug = "{$slug}-" . $this->id;
+        }
+
+        $this->attributes['slug'] = $slug;
+    }
+
+    public function markBestReply(Reply $reply)
+    {
+        $this->update(['best_reply_id' => $reply->id]);
     }
 }

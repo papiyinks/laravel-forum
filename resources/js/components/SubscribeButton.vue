@@ -14,7 +14,7 @@
 
         computed: {
             classes() {
-                return ['btn', this.isActive ? 'btn-primary' : 'btn-default'];
+                return ['btn', this.isActive ? 'btn-primary' : 'btn-outline-dark'];
             }
         },
 

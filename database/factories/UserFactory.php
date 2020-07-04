@@ -33,3 +33,9 @@ $factory->state(User::class, 'unconfirmed', function () {
         'confirmed' => false
     ];
 });
+
+$factory->state(User::class, 'adminstrator', function () {
+    return [
+        'name' => 'waliu'
+    ];
+});
