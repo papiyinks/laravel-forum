@@ -21,6 +21,7 @@
     <style>
         .level { display: flex; align-items: center; }
         .flex { flex: 1; }
+        .ais-highlight > em { background-color: yellow; font-style: normal; }
         [v-cloak] {display: none; }
     </style>
 
