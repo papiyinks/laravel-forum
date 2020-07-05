@@ -21,7 +21,7 @@
     <style>
         .level { display: flex; align-items: center; }
         .flex { flex: 1; }
-        [v-cloak] {display: none;}
+        [v-cloak] {display: none; }
     </style>
 
     <script>
